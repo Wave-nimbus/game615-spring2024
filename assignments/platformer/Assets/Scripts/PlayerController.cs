@@ -26,7 +26,6 @@ public class PlayerController : MonoBehaviour
     public GameObject camOrigin;
     public GameObject visuals;
     public Camera mainCam;
-    private Transform lookAtTarget;
     private float camDamping;
     private bool isJumping;
     
@@ -118,7 +117,6 @@ public class PlayerController : MonoBehaviour
     private void movement()
     {
         
-        lookAtTarget = camOrigin.transform;
         //Walking Controls
         Vector3 camForward = mainCam.transform.forward * vAxis;
         camForward.y = 0;
@@ -148,16 +146,17 @@ public class PlayerController : MonoBehaviour
             }
 
         }
-        if (chaCon.isGrounded)
-            isJumping = false;
         
-        moveVec *= forwardSpeed;
-        lookAtTarget.position += moveVec;
-        if (!isJumping && Mathf.Abs(vAxis) > 0.25 || Mathf.Abs(hAxis) > 0.25)
+        
+        moveVec *= forwardSpeed;        
+        if (!isJumping && (Mathf.Abs(vAxis) > 0.25 || Mathf.Abs(hAxis) > 0.25))
         { 
-            visuals.transform.LookAt(lookAtTarget); 
+            visuals.transform.rotation = Quaternion.LookRotation(moveVec);
         }   
         moveVec.y = yVel;
         chaCon.Move(moveVec * Time.deltaTime);
+        
+        if (chaCon.isGrounded)
+            isJumping = false;
     }
 }
